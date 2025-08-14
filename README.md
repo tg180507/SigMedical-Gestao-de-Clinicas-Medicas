@@ -1,2 +1,2 @@
-# SigMedical---Gest-o-de-Cl-nicas-M-dicas
+# SigMedical-Gestao-de-Clinicas-Medicas
 Sistema de Gestão de Clínicas Médicas
