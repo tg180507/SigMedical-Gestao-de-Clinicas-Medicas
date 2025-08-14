@@ -1,0 +1,264 @@
+///////////////////////////////////////////////////////////////////////////////
+///                                                                         ///
+///          Universidade Federal do Rio Grande do Norte (UFRN)             ///
+///              Centro de Ensino Superior do Seridó (CERES)                ///
+///            Departamento de Computação e Tecnologia (DCT)                ///
+///               Disciplina DCT1106 -- Programação                         ///
+///                                                                         ///
+///        Projeto Sistema de Gestão Escolar :: Língua Solta                ///
+///            Developed by @flgorgonio - since Mar, 2020                   ///
+///                                                                         ///
+///   Este template foi reestruturado para ser modular, reutilizável e      ///
+///   demonstrar boas práticas de programação, como a separação de           ///
+///   responsabilidades e o princípio "Don't Repeat Yourself" (DRY).        ///
+///                                                                         ///
+///////////////////////////////////////////////////////////////////////////////
+
+#include <stdio.h>
+#include <stdlib.h>
+
+//=============================================================================
+// >> Assinaturas das Funções (Protótipos)
+//=============================================================================
+
+// Módulo de Utilitários
+void limpar_tela(void);
+void pausar_tela(void);
+
+// Módulo de UI (Interface do Usuário)
+void renderizar_tela(const char* titulo_tela, const char* opcoes);
+
+// Módulo de Alunos
+void navegar_modulo_aluno(void);
+char tela_menu_aluno(void);
+void tela_cadastrar_aluno(void);
+void tela_pesquisar_aluno(void);
+// Futuras telas: void tela_alterar_aluno(void); void tela_excluir_aluno(void);
+
+// Telas Principais e de Informação
+char tela_menu_principal(void);
+void tela_sobre(void);
+void tela_equipe(void);
+
+
+//=============================================================================
+// >> Função Principal (Main)
+//=============================================================================
+
+int main(void) {
+    char opcao;
+    do {
+        opcao = tela_menu_principal();
+        switch (opcao) {
+            case '1':
+                navegar_modulo_aluno();
+                break;
+            case '2':
+                // navegar_modulo_professor(); // Chamaria a função do módulo de professores
+                printf("\n\tMódulo de Professor em construção!\n");
+                pausar_tela();
+                break;
+            case '8':
+                tela_sobre();
+                break;
+            case '9':
+                tela_equipe();
+                break;
+            case '0':
+                printf("\nEncerrando o programa...\n");
+                break;
+            default:
+                printf("\n\tOpção inválida! Tente novamente.\n");
+                pausar_tela();
+                break;
+        }
+    } while (opcao != '0');
+
+    return 0;
+}
+
+
+//=============================================================================
+// >> Módulo de Utilitários
+//=============================================================================
+
+// Limpa a tela do terminal (compatível com Windows e Unix-like)
+void limpar_tela(void) {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+// Pausa a execução e espera que o usuário pressione ENTER
+void pausar_tela(void) {
+    printf("\n\t\t\t>>> Pressione <ENTER> para continuar...\n");
+    // Limpa o buffer de entrada para garantir que o getchar() funcione
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+    getchar();
+}
+
+
+//=============================================================================
+// >> Módulo de UI (Interface do Usuário)
+//=============================================================================
+
+// Função interna para desenhar o cabeçalho padrão, usada por renderizar_tela()
+void desenhar_cabecalho_base(void) {
+    printf("///////////////////////////////////////////////////////////////////////////////\n");
+    printf("///                                                                         ///\n");
+    printf("///          Universidade Federal do Rio Grande do Norte (UFRN)             ///\n");
+    printf("///              Centro de Ensino Superior do Seridó (CERES)                ///\n");
+    printf("///            Departamento de Computação e Tecnologia (DCT)                ///\n");
+    printf("///               Disciplina DCT1106 -- Programação                         ///\n");
+    printf("///                                                                         ///\n");
+    printf("///        Projeto Sistema de Gestão Escolar :: Língua Solta                ///\n");
+    printf("///            Developed by @flgorgonio - since Mar, 2020                   ///\n");
+    printf("///                                                                         ///\n");
+    printf("///////////////////////////////////////////////////////////////////////////////\n");
+}
+
+/*
+ * Função central para renderizar uma tela padronizada.
+ * Argumentos:
+ * titulo_tela: O texto que aparecerá no centro do cabeçalho.
+ * opcoes: Uma string formatada com as opções do menu.
+ * Pode ser NULL se a tela não tiver um menu de opções.
+ */
+
+void renderizar_tela(const char* titulo_tela, const char* opcoes) {
+    limpar_tela();
+    desenhar_cabecalho_base();
+    printf("///                                                                         ///\n");
+    // O formato `%-66s` alinha o texto à esquerda em um espaço de 66 caracteres
+    printf("/// :: %-66s :: ///\n", titulo_tela);
+    printf("///                                                                         ///\n");
+    if (opcoes) {
+        printf("%s", opcoes); // Imprime as opções formatadas
+        printf("///                                                                         ///\n");
+        printf("///            Escolha a sua opção: ");
+    }
+}
+
+
+//=============================================================================
+// >> Módulo de Alunos
+//=============================================================================
+
+// Ponto de entrada para todas as operações do módulo de alunos
+void navegar_modulo_aluno(void) {
+    char opcao;
+    do {
+        opcao = tela_menu_aluno();
+        switch (opcao) {
+            case '1':
+                tela_cadastrar_aluno();
+                break;
+            case '2':
+                tela_pesquisar_aluno();
+                break;
+            // Adicionar casos para 3 (Alterar) e 4 (Excluir)
+            case '0':
+                // Apenas quebra o loop para voltar ao menu principal
+                break;
+            default:
+                printf("\n\tOpção inválida! Tente novamente.\n");
+                pausar_tela();
+                break;
+        }
+    } while (opcao != '0');
+}
+
+// Apresenta o menu de alunos e retorna a opção escolhida
+char tela_menu_aluno(void) {
+    char op;
+    const char* opcoes =
+        "///            1. Cadastrar um novo aluno                                   ///\n"
+        "///            2. Pesquisar os dados de um aluno                            ///\n"
+        "///            3. Atualizar o cadastro de um aluno                          ///\n"
+        "///            4. Excluir um aluno do sistema                               ///\n"
+        "///            0. Voltar ao menu principal                                  ///";
+    
+    renderizar_tela("Módulo de Alunos", opcoes);
+    scanf(" %c", &op);
+    getchar(); // Limpa o buffer do teclado (consome o ENTER)
+    return op;
+}
+
+// Tela para o formulário de cadastro de aluno
+void tela_cadastrar_aluno(void) {
+    renderizar_tela("Cadastrar Novo Aluno", NULL); // NULL porque não tem menu de opções
+    printf("///                                                                         ///\n");
+    printf("///            Matrícula (apenas números):                                  ///\n");
+    printf("///            Nome completo:                                               ///\n");
+    printf("///            E-mail:                                                      ///\n");
+    printf("///            Data de Nascimento (dd/mm/aaaa):                             ///\n");
+    printf("///                                                                         ///\n");
+    printf("///////////////////////////////////////////////////////////////////////////////\n");
+    // Aqui viria a lógica para ler os dados do aluno com scanf ou fgets
+    pausar_tela();
+}
+
+// Tela para a pesquisa de aluno
+void tela_pesquisar_aluno(void) {
+    renderizar_tela("Pesquisar Aluno por Matrícula", NULL);
+    printf("///                                                                         ///\n");
+    printf("///            Informe a matrícula do aluno:                                ///\n");
+    printf("///                                                                         ///\n");
+    printf("///////////////////////////////////////////////////////////////////////////////\n");
+    // Aqui viria a lógica de pesquisa
+    pausar_tela();
+}
+
+
+//=============================================================================
+// >> Telas Principais e de Informação
+//=============================================================================
+
+// Apresenta o menu principal e retorna a opção do usuário
+char tela_menu_principal(void) {
+    char op;
+    const char* opcoes =
+        "///            1. Módulo Aluno                                                  ///\n"
+        "///            2. Módulo Professor                                              ///\n"
+        "///            3. Módulo Turma                                                  ///\n"
+        "///            4. Módulo Matrícula                                              ///\n"
+        "///            5. Módulo Relatórios                                             ///\n"
+        "///                                                                         ///\n"
+        "///            8. Sobre o Projeto                                               ///\n"
+        "///            9. Equipe de Desenvolvimento                                     ///\n"
+        "///            0. Sair                                                          ///";
+
+    renderizar_tela("Menu Principal", opcoes);
+    scanf(" %c", &op);
+    getchar(); // Limpa o buffer
+    return op;
+}
+
+// Exibe informações sobre o projeto
+void tela_sobre(void) {
+    const char* info =
+        "///     Este programa é um exemplo para a disciplina DCT1106 e serve     ///\n"
+        "///     como um guia de consulta e referência para o desenvolvimento      ///\n"
+        "///     dos projetos dos alunos ao longo da disciplina.                   ///";
+    renderizar_tela("Sobre o Projeto", NULL);
+    printf("%s\n", info);
+    printf("///////////////////////////////////////////////////////////////////////////////\n");
+    pausar_tela();
+}
+
+// Exibe informações sobre a equipe de desenvolvimento
+void tela_equipe(void) {
+    const char* info =
+        "///     Este projeto exemplo foi desenvolvido por:                        ///\n"
+        "///                                                                       ///\n"
+        "///       Prof. Flavius Gorgônio                                          ///\n"
+        "///       E-mail: flavius.gorgonio@ufrn.br                                ///\n"
+        "///       Redes sociais: @flgorgonio                                      ///";
+    renderizar_tela("Equipe de Desenvolvimento", NULL);
+    printf("%s\n", info);
+    printf("///////////////////////////////////////////////////////////////////////////////\n");
+    pausar_tela();
+}
